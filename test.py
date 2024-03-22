@@ -65,18 +65,19 @@ def process_files(folder_path):
 
     # Loop through each file in the folder
     for date_dirs in aqueduct_path:
+
         # Construct the full path to the file
         date_path = os.path.join(str(folder_path), str(date_dirs))
+        
         # print(date_path)
         race_list = os.listdir(date_path)
         # print(race_list)
+
         for race_dirs in race_list:
             full_path = os.path.join(str(date_path), str(race_dirs))
             #print(full_path)
 
             test = os.listdir(full_path)
-            #print(test)
-
             entries = full_path + '\\' + 'entries.csv'
             new_info = full_path + '\\' + 'new_info.csv'
             payouts = full_path + '\\' + 'payouts.csv'
@@ -97,7 +98,6 @@ def process_files(folder_path):
             mod_dataset = []
 
             #for file_path in file_paths:
-
 
             npa_new_info = np.genfromtxt(new_info, delimiter=',')
             npa_entries = np.genfromtxt(entries, delimiter=',')
@@ -122,7 +122,7 @@ def process_files(folder_path):
 
             print(mod_dataset)
             print('\n')
-            print('success')
+            print('success 1')
             sleep(5)
 
             # Loop through each file path and read the CSV into a DataFrame, then append it to the list
@@ -131,7 +131,7 @@ def process_files(folder_path):
                 datasets.append(df)
             print(datasets)
             print('\n')
-            print('success')
+            print('success 2')
             sleep(5)
 
 
@@ -178,11 +178,7 @@ def process_files(folder_path):
                 # entries_df.append('0, 0, 0, 0, 0, 0')
                 # entries_df.append('0, 0, 0, 0, 0, 0')
 
-                
-
-
             data_list = [new_info_df, entries_df, payouts_df]
-
             # print(type(data_list))
             # print(len(data_list))
             # data_list_df = pd.DataFrame(data_list)
@@ -210,13 +206,13 @@ def process_files(folder_path):
             # print(payouts_df)
             # payouts_df.to_csv(filename2, sep=',', mode='a', index=False, encoding='utf-8')
             # print(' ')
-
             pass
 
 
 
 # Specify the folder path you want to process
 # folder_path = "/path/to/your/folder"
+
 folder_path = "C:\\Users\\Tyler\\projects\\cybertooth-mod\\data\\aqueduct"
 folder_path_test = "C:\\Users\\Tyler\\projects\\cybertooth-mod\\data\\aqueduct1"
 folder_path_test1 = "C:\\Users\\Tyler\\projects\\cybertooth-mod\\data\\aqueduct-test"
