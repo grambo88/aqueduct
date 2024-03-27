@@ -75,11 +75,12 @@ class MyWebdriver:
             rinfo = [item.replace('-', '') for item in rinfo]
             rinfo = [item.replace('Dirt', '0') for item in rinfo]
             rinfo = [item.replace('Turf', '1') for item in rinfo]
-            # race_date = race_date.replace('-', '')
-            # race_date = race_date.replace('\n', '').replace('-', '') # adds date
-            print(type(race_date))
-            race_date = int(race_date)
-            rinfo.insert(0, race_date)
+            
+            race_date = race_date.replace('-', '')
+            race_date = race_date.replace('\n', '').replace('-', '') # adds date
+            # print(type(race_date))
+            # race_date = int(race_date)
+            rinfo.insert(0, race_date[4:])
 
             rinfo.insert(1, str(race)) # adds race_num
             rinfo.insert(2, price) # add purse
@@ -88,7 +89,7 @@ class MyWebdriver:
             # if rinfo == "Turf":
             #     rinfo.replace("Turf", int(1))
             rinfo = str(rinfo) # date, race, purse, dist, dirt/turf, type
-            rinfo = rinfo.replace('"', "'").replace('[', '').replace(']', '').replace("'", '').replace('.', '').replace(' ,', '').replace('/', '')
+            rinfo = rinfo.replace('"', "'").replace('[', '').replace(']', '').replace("'", '').replace('.', '').replace(' ,', '') # .replace('/', '')
 
             new_path = np + 'new_info.csv'
             sys.stdout = open(new_path, 'a')
