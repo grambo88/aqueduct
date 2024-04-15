@@ -53,12 +53,11 @@ class MyWebdriver:
         race_purse = driver.find_elements('xpath', "//*[@class='col-lg-auto race-purse']")
 
         path = 'data/aqueduct-test/' + str(race_date.strip("\n")) + '/'
-
         os.makedirs(path, exist_ok=True)
 
         race = 0
-        # sleep(5)
         for money, x in zip(race_purse, race_info):
+            # print('Printing x: ', x.text)
             race = race + 1
             np = path + "race" + str(race) + "/"
             os.makedirs(np, exist_ok=True)
@@ -73,24 +72,26 @@ class MyWebdriver:
             rinfo = [item.replace(',500', '500') for item in rinfo]
             rinfo = [item.replace('$', '') for item in rinfo]
             rinfo = [item.replace('-', '') for item in rinfo]
+            rinfo = [item.replace(', ', ',') for item in rinfo]
+            # Track Type
             rinfo = [item.replace('Dirt', '0') for item in rinfo]
             rinfo = [item.replace('Turf', '1') for item in rinfo]
-            
+            rinfo = [item.replace('Inner Turf', '2') for item in rinfo]
+            # Race Type
+            rinfo = [item.replace(' Claiming', ',0') for item in rinfo]
+            rinfo = [item.replace(' Maiden Claiming', ',1') for item in rinfo]
+            rinfo = [item.replace(' Allowance', ',2') for item in rinfo]
+            rinfo = [item.replace(' Maiden', ',3') for item in rinfo]
+            # Race Distance - need to perform math on these
+            rinfo = [item.replace('1 1/8M', '0') for item in rinfo]
+            rinfo = [item.replace('6 1/2F', '1') for item in rinfo]
             race_date = race_date.replace('-', '')
             race_date = race_date.replace('\n', '').replace('-', '') # adds date
-            # print(type(race_date))
-            # race_date = int(race_date)
             rinfo.insert(0, race_date[4:])
-
             rinfo.insert(1, str(race)) # adds race_num
             rinfo.insert(2, price) # add purse
-            # if rinfo == "Dirt":
-            #     rinfo.replace("Dirt", int(0))
-            # if rinfo == "Turf":
-            #     rinfo.replace("Turf", int(1))
             rinfo = str(rinfo) # date, race, purse, dist, dirt/turf, type
-            rinfo = rinfo.replace('"', "'").replace('[', '').replace(']', '').replace("'", '').replace('.', '').replace(' ,', '') # .replace('/', '')
-
+            rinfo = rinfo.replace('"', "'").replace('[', '').replace(']', '').replace("'", '').replace('.', '').replace(' ,', '').replace(', ', ',') # .replace('/', '')
             new_path = np + 'new_info.csv'
             sys.stdout = open(new_path, 'a')
             print(rinfo)
@@ -106,8 +107,11 @@ class MyWebdriver:
                 winner_stats = []
                 new_stats = []
                 for cell in row.find_elements('tag name', 'td'):
-                    cell = cell.text
-                    winner_stats.append(cell)
+                    new_stats = [cell.text]
+                    new_stats = [item.replace('$', '') for item in new_stats]
+                    new_stats = [item.replace('-', '0') for item in new_stats]
+                    new_stats = [item.replace(', ', ',') for item in new_stats]
+                    winner_stats.append(new_stats)
                 if winner_stats == []:
                     # print('winner_stats == []')
                     pass
@@ -115,19 +119,20 @@ class MyWebdriver:
                     # print('payout checkpoint')
                     winner_stats.pop(1)
                     winner_stats_str = str(winner_stats)
-                    winner_stats_str = winner_stats_str.replace('"', "'").replace('[', '').replace(']', '').replace("'", '').replace(' ,', '')
+                    winner_stats_str = winner_stats_str.replace('"', "'").replace('[', '').replace(']', '')
+                    winner_stats_str = winner_stats_str.replace("'", '').replace(' ,', '').replace(', ',',')
                     nppp = path + "race" + str(ra) + "/"
                     new_path = nppp + 'payouts.csv'  
                     sys.stdout = open(new_path, 'a')
                     print(winner_stats_str)
 
-        # sleep(5)
         n = 0
         for table in tables:
             n = n + 1
             for entry in table.find_elements('tag name', 'tr'):
                 if entry not in scratched:
                     horse_stats = []
+                    entry_test = []
                     new_stat = []
                     for stat in entry.find_elements('tag name', 'td'):
                         stat = stat.text
@@ -139,8 +144,9 @@ class MyWebdriver:
                         npppp = path + "race" + str(n) + "/"
                         new_path = npppp + 'entries.csv'
                         horse_stats_str = str(horse_stats)
-                        horse_stats_str = horse_stats_str.replace('"', "'").replace('[', '').replace(']', '').replace("'", '').replace('.', '').replace(' ,', '')
-                        horse_stats_str = horse_stats_str[2:]
+                        horse_stats_str = horse_stats_str.replace('"', "'").replace('[', '').replace(']', '').replace("'", '').replace('.', '').replace(' ,', '').replace(', ', ',')
+                        horse_stats_str = horse_stats_str.replace('$', '').replace('-', '0')
+                        horse_stats_str = horse_stats_str[1:]
                         sys.stdout = open(new_path, 'a')
                         print(horse_stats_str)
                 else:
@@ -157,11 +163,7 @@ if __name__ == '__main__':
     chrome_options.add_argument('--ignore-certificate-errors')
     chrome_options.add_argument('--ignore-ssl-errors')
     chrome_options.add_argument("--start-maximized")
-    # chrome_options.page_load_strategy = "eager"
-    # chrome_options.add_argument("--no-sandbox")
-    # chrome_options.page_load_strategy = 'none'
-    # chrome_options.add_argument("--headless")
-    print('got here')
+    # print('got here')
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 

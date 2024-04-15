@@ -4,10 +4,6 @@ import pandas as pd
 from time import sleep
 import numpy as np 
 
-filename = 'data.csv'
-filename1 = 'data1.csv'
-filename2 = 'data2.csv'
-filename3 = 'data3.csv'
 
 def read_csv_file(file_path):
     data = []
@@ -42,8 +38,8 @@ def append_to_csv(df1, df2, df3, csv_filename):
 
 def predict_output(matrix1, matrix2):
     # Ensure the input matrices have the correct shapes
-    assert matrix1.shape == (6,) , "Matrix1 should be of shape (1, 6)"
-    assert matrix2.shape == (16,6), "Matrix2 should be of shape (16, 6)"
+    assert matrix1.shape == (7,) , "Matrix1 should be of shape 1 row x 7 columns"
+    assert matrix2.shape == (16,7), "Matrix2 should be of shape 16 rows x 7 columns"
 
     # Perform some operation on the input matrices (you need to define the operation)
     # For example, let's concatenate the matrices and reshape to get a 4x4 matrix
@@ -53,16 +49,84 @@ def predict_output(matrix1, matrix2):
     return predicted_matrix
 
 
+# Function to read CSV file and ensure 7 columns and 16 rows
+def ensure_entries_csv_dimensions(filename):
+    # Read the CSV file
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+    
+    # Ensure 16 rows
+    while len(rows) < 16:
+        rows.append(['0'] * 7)
+    
+    # Ensure 7 columns
+    for row in rows:
+        while len(row) < 7:
+            row.append('0')
+        row = row[:7]  # Truncate if more than 7 columns
+    
+    # Write back to the CSV file
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+
+# Test the function
+# ensure_csv_dimensions('your_csv_file.csv')
+
+def ensure_payouts_csv_dimensions(filename):
+    # Read the CSV file
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+    
+    # Ensure 4 rows
+    while len(rows) < 4:
+        rows.append(['0'] * 7)
+    
+    # Ensure 4 columns
+    for row in rows:
+        while len(row) < 4:
+            row.append('0')
+        row = row[:4]  # Truncate if more than 7 columns
+    
+    # Write back to the CSV file
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+
+def ensure_new_info_csv_dimensions(filename):
+    # Read the CSV file
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+    
+    # Ensure 1 rows
+    while len(rows) < 1:
+        rows.append(['0'] * 7)
+    
+    # Ensure 7 columns
+    for row in rows:
+        while len(row) < 7:
+            row.append('0')
+        row = row[:7]  # Truncate if more than 7 columns
+    
+    # Write back to the CSV file
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+
+def horse_names_to_csv(filename):
+    # Write back to the CSV file
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+
+
+
 def process_files(folder_path):
     # List all files in the specified folder
     aqueduct_path = os.listdir(folder_path)
-
-    filename = 'data.csv'
-    filename1 = 'data1.csv'
-    filename2 = 'data2.csv'
-    filename3 = 'data3.csv'
-
-
     # Loop through each file in the folder
     for date_dirs in aqueduct_path:
 
@@ -72,6 +136,7 @@ def process_files(folder_path):
         # print(date_path)
         race_list = os.listdir(date_path)
         # print(race_list)
+        test_db = []
 
         for race_dirs in race_list:
             full_path = os.path.join(str(date_path), str(race_dirs))
@@ -82,47 +147,63 @@ def process_files(folder_path):
             new_info = full_path + '\\' + 'new_info.csv'
             payouts = full_path + '\\' + 'payouts.csv'
 
-            # entries_df = pd.read_csv(entries, sep=',', header=None)
-            # new_info_df = pd.read_csv(new_info, sep=',', header=None)
-            # payouts_df = pd.read_csv(payouts, sep=',', header=None)
-
-
-            #print(entries_df.values)
-            #    print(entries_df, new_info_df, payouts_df)
-            # Trying to add '0,0,0,0,0,0' to the entries files that do not have 16 rows
-
             file_paths = [entries, new_info, payouts]
 
             # Initialize an empty list to store datasets
             datasets = []
             mod_dataset = []
+            
 
             #for file_path in file_paths:
-
+            print('checkpoint')
             npa_new_info = np.genfromtxt(new_info, delimiter=',')
-            npa_entries = np.genfromtxt(entries, delimiter=',')
+            npa_entries = np.genfromtxt(entries, delimiter=',', invalid_raise = False)
             npa_payouts = np.genfromtxt(payouts, delimiter=',')
-
+            print('\n')
+            print('the length of npa_new_info is: ',len(npa_new_info))
+            print('the length of npa_entries is: ',len(npa_entries))
+            print('the length of npa_payouts is: ',len(npa_payouts))
+            print('\n')
 
             mod_dataset.append(npa_new_info)
             mod_dataset.append(npa_entries)
             mod_dataset.append(npa_payouts)
 
-            print(npa_new_info.shape)
-            print(npa_entries.shape)
+            print('---- STARTING DIMENSION ENFORCEMENT ---- ')
+
+            ensure_new_info_csv_dimensions(new_info)
+            ensure_entries_csv_dimensions(entries)
+            ensure_payouts_csv_dimensions(payouts)
+
+            print('---- COMPLETED DIMENSION ENFORCEMENT ---- ')
 
             print('\n')
+            print("NPA_NEW_INFO:")
             print(npa_new_info)
             print('\n')
+            print('NPA_ENTRIES')
             print(npa_entries)
             print('\n')
-
+            print('NPA_PAYOUTS')
+            print(npa_payouts)
+            print('\n')
             # predict_output(npa_new_info, npa_entries)
 
-
-            print(mod_dataset)
-            print('\n')
             print('success 1')
+            print('Test Horse Names Only')
+            print(npa_entries[:,1])
+            
+            print(len(npa_entries[:,1]))
+            print('END')
+            print('\n')
+
+            # test = predict_output(npa_new_info, npa_entries)
+            # print(test)
+
+            test_db.append(npa_entries[:,1])
+            # runner_list = npa_entries[:,1]
+
+
             sleep(5)
 
             # Loop through each file path and read the CSV into a DataFrame, then append it to the list
@@ -134,78 +215,6 @@ def process_files(folder_path):
             print('success 2')
             sleep(5)
 
-
-            # pass
-
-            # datasets_array = [df.values for df in datasets]
-            # print(datasets_array)
-            # sleep(2)
-
-
-            # with open(new_info, 'r') as info:
-            #     info_reader = csv.reader(info)
-            #     info_data = list(info_reader)
-                
-            #     try:
-            #         with open(entries, 'r') as entrie:
-
-            #         info_data_array = np.array(info_data)
-            #         # print('here')
-            #         print(info_data_array)
-            #         sleep(2)
-            #     except:
-            #         pass
-            # Testing below:
-
-
-            # result_matrix = predict_output(new_info_df, entries_df)
-            # print("Input Matrix 1: ")
-            # print(new_info_df)
-            # print("Input Matrix 2: ")
-            # printt(entries_df)
-            # print('Predicted Output: ')
-            # print(result_matrix)
-
-
-            # csv_file_paths = [entries, new_info, payouts]
-            # data_list = [entries_df.to_string(index=False), new_info_df.to_string(index=False), payouts_df.to_string(index=False)]
-
-            # if len(entries_df) == 14:
-            #     print('data_list is equal to 14 not 16')
-            #     entries.write('0, 0, 0, 0, 0, 0')
-            #     print(new_info)
-            #     print(entries)
-                # entries_df.append('0, 0, 0, 0, 0, 0')
-                # entries_df.append('0, 0, 0, 0, 0, 0')
-
-            data_list = [new_info_df, entries_df, payouts_df]
-            # print(type(data_list))
-            # print(len(data_list))
-            # data_list_df = pd.DataFrame(data_list)
-            # data_list.to_csv(filename3, sep=',', mode='a', index=False, encoding='utf-8')
-
-            # data_list.to_csv(filename3, sep=',', mode='a', index=False, encoding='utf-8')
-
-            # append_to_csv(new_info_df, entries_df, payouts_df, filename3)
-
-            
-            # print(data_list)
-            # print(len(data_list[0]), len(data_list[1]), len(data_list[2]))
-
-            # print(df.to_string(index=False))
-            # sleep(2)
-
-
-
-            # print(new_info_df)
-            # new_info_df.to_csv(filename, sep=',', mode='a', index=False, encoding='utf-8')
-            # #print(' ')
-            # print(entries_df)
-            # entries_df.to_csv(filename1, sep=',', mode='a', index=False, encoding='utf-8')
-            # #print(' ')
-            # print(payouts_df)
-            # payouts_df.to_csv(filename2, sep=',', mode='a', index=False, encoding='utf-8')
-            # print(' ')
             pass
 
 
@@ -215,7 +224,8 @@ def process_files(folder_path):
 
 folder_path = "C:\\Users\\Tyler\\projects\\cybertooth-mod\\data\\aqueduct"
 folder_path_test = "C:\\Users\\Tyler\\projects\\cybertooth-mod\\data\\aqueduct1"
-folder_path_test1 = "C:\\Users\\Tyler\\projects\\cybertooth-mod\\data\\aqueduct-test"
+# folder_path_test1 = "C:\\Users\\Tyler\\projects\\cybertooth-mod\\data\\aqueduct-test"
+folder_path_test1 = "C:\\Users\\Tyler\\projects\\aqueduct\\data\\aqueduct-test"
 
 # Call the function to process files in the folder
 # process_files(folder_path)
