@@ -88,7 +88,7 @@ def ensure_payouts_csv_dimensions(filename):
     for row in rows:
         while len(row) < 4:
             row.append('0')
-        row = row[:4]  # Truncate if more than 7 columns
+        row = row[:4]  # Truncate if more than 4 columns
     
     # Write back to the CSV file
     with open(filename, 'w', newline='') as file:
@@ -151,11 +151,8 @@ def process_files(folder_path):
 
             # Initialize an empty list to store datasets
             datasets = []
-            mod_dataset = []
-            
 
             #for file_path in file_paths:
-            print('checkpoint')
             npa_new_info = np.genfromtxt(new_info, delimiter=',')
             npa_entries = np.genfromtxt(entries, delimiter=',', invalid_raise = False)
             npa_payouts = np.genfromtxt(payouts, delimiter=',')
@@ -164,10 +161,6 @@ def process_files(folder_path):
             print('the length of npa_entries is: ',len(npa_entries))
             print('the length of npa_payouts is: ',len(npa_payouts))
             print('\n')
-
-            mod_dataset.append(npa_new_info)
-            mod_dataset.append(npa_entries)
-            mod_dataset.append(npa_payouts)
 
             print('---- STARTING DIMENSION ENFORCEMENT ---- ')
 
@@ -187,6 +180,7 @@ def process_files(folder_path):
             print('NPA_PAYOUTS')
             print(npa_payouts)
             print('\n')
+
             # predict_output(npa_new_info, npa_entries)
 
             print('success 1')
@@ -201,19 +195,26 @@ def process_files(folder_path):
             # print(test)
 
             test_db.append(npa_entries[:,1])
+            # if npa_entries[:,1]
             # runner_list = npa_entries[:,1]
+            print(test_db)
+            for i in test_db:
+                for x in i:
+                    if x != 0:
+                        print(x)
+                    else:
+                        pass
 
+            sleep(1)
 
-            sleep(5)
-
-            # Loop through each file path and read the CSV into a DataFrame, then append it to the list
-            for file_path in file_paths:
-                df = pd.read_csv(file_path, header=None)
-                datasets.append(df)
-            print(datasets)
-            print('\n')
-            print('success 2')
-            sleep(5)
+            # # Loop through each file path and read the CSV into a DataFrame, then append it to the list
+            # for file_path in file_paths:
+            #     df = pd.read_csv(file_path, header=None)
+            #     datasets.append(df)
+            # print(datasets)
+            # print('\n')
+            # print('success 2')
+            # sleep(5)
 
             pass
 

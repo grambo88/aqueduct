@@ -126,6 +126,7 @@ class MyWebdriver:
                     sys.stdout = open(new_path, 'a')
                     print(winner_stats_str)
 
+
         n = 0
         for table in tables:
             n = n + 1
@@ -135,14 +136,24 @@ class MyWebdriver:
                     entry_test = []
                     new_stat = []
                     for stat in entry.find_elements('tag name', 'td'):
-                        stat = stat.text
-                        m = stat.replace("\n", "', '").replace(", Jr.", " Jr.")
-                        horse_stats.append(m)
+                        new_stat = stat.text
+                        print(new_stat)
+                        new_stat = [item.replace("\n", "', '") for item in new_stats]
+                        print(new_stat)
+                        new_stat = [item.replace(", Jr.", " Jr.") for item in new_stats]
+                        print(new_stat)
+                        new_stat = [item.replace('Flowers for Lisa', '101') for item in new_stats]
+                        # Testing for horse_name_to_number
+                        print(new_stat)
+                        # End Testing
+                        horse_stats.append(new_stat)
                     if horse_stats == []:
                         pass
                     else:
                         npppp = path + "race" + str(n) + "/"
                         new_path = npppp + 'entries.csv'
+                        # horse_stats_str = [horse_stats_str.text]
+                        # horse_stats_str = horse_stats
                         horse_stats_str = str(horse_stats)
                         horse_stats_str = horse_stats_str.replace('"', "'").replace('[', '').replace(']', '').replace("'", '').replace('.', '').replace(' ,', '').replace(', ', ',')
                         horse_stats_str = horse_stats_str.replace('$', '').replace('-', '0')
@@ -151,6 +162,38 @@ class MyWebdriver:
                         print(horse_stats_str)
                 else:
                     pass
+
+
+
+
+
+        # n = 0
+        # for table in tables:
+        #     n = n + 1
+        #     for entry in table.find_elements('tag name', 'tr'):
+        #         if entry not in scratched:
+        #             horse_stats = []
+        #             entry_test = []
+        #             new_stat = []
+        #             for stat in entry.find_elements('tag name', 'td'):
+        #                 stat = [stat.text]
+        #                 m = stat.replace("\n", "', '").replace(", Jr.", " Jr.")
+        #                 horse_stats.append(m)
+        #             if horse_stats == []:
+        #                 pass
+        #             else:
+        #                 npppp = path + "race" + str(n) + "/"
+        #                 new_path = npppp + 'entries.csv'
+        #                 # horse_stats_str = [horse_stats_str.text]
+        #                 horse_stats_str = horse_stats
+        #                 # horse_stats_str = str(horse_stats)
+        #                 horse_stats_str = horse_stats_str.replace('"', "'").replace('[', '').replace(']', '').replace("'", '').replace('.', '').replace(' ,', '').replace(', ', ',')
+        #                 horse_stats_str = horse_stats_str.replace('$', '').replace('-', '0')
+        #                 horse_stats_str = horse_stats_str[1:]
+        #                 sys.stdout = open(new_path, 'a')
+        #                 print(horse_stats_str)
+        #         else:
+        #             pass
 
 
 
@@ -163,6 +206,7 @@ if __name__ == '__main__':
     chrome_options.add_argument('--ignore-certificate-errors')
     chrome_options.add_argument('--ignore-ssl-errors')
     chrome_options.add_argument("--start-maximized")
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
     # print('got here')
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
